@@ -39,8 +39,10 @@ def heroku():
 
 
 def heroku_test():
+    def heroku_run(file):
+        return f"heroku run python {file} -v"
     local(
-        "heroku run python test_tasks.py -v && heroku run python test_users.py -v"
+        f"{heroku_run('test_tasks.py')} && {heroku_run('test_users.py')}"
     )
 
 

@@ -1,7 +1,13 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
 from sqlalchemy.sql.expression import select
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
+from wtforms import (
+    StringField,
+    SelectField,
+    SelectMultipleField,
+    DateTimeField,
+    BooleanField,
+)
 from wtforms.validators import DataRequired, AnyOf, URL
 
 class ShowForm(FlaskForm):
@@ -14,8 +20,9 @@ class ShowForm(FlaskForm):
     start_time = DateTimeField(
         'start_time',
         validators=[DataRequired()],
-        default= datetime.today()
+        default=datetime.today(),
     )
+
 
 class VenueForm(FlaskForm):
     name = StringField(
@@ -91,28 +98,10 @@ class VenueForm(FlaskForm):
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
-        'genres', validators=[DataRequired()],
-        # choices=[
-        #     ('Alternative', 'Alternative'),
-        #     ('Blues', 'Blues'),
-        #     ('Classical', 'Classical'),
-        #     ('Country', 'Country'),
-        #     ('Electronic', 'Electronic'),
-        #     ('Folk', 'Folk'),
-        #     ('Funk', 'Funk'),
-        #     ('Hip-Hop', 'Hip-Hop'),
-        #     ('Heavy Metal', 'Heavy Metal'),
-        #     ('Instrumental', 'Instrumental'),
-        #     ('Jazz', 'Jazz'),
-        #     ('Musical Theatre', 'Musical Theatre'),
-        #     ('Pop', 'Pop'),
-        #     ('Punk', 'Punk'),
-        #     ('R&B', 'R&B'),
-        #     ('Reggae', 'Reggae'),
-        #     ('Rock n Roll', 'Rock n Roll'),
-        #     ('Soul', 'Soul'),
-        #     ('Other', 'Other'),
-        # ]
+        'genres',
+        validators=[DataRequired()],
+        coerce=int,
+        # choices=all_genres(),
     )
     facebook_link = StringField(
         'facebook_link', validators=[URL()]
@@ -121,13 +110,11 @@ class VenueForm(FlaskForm):
         'website_link'
     )
 
-    seeking_talent = BooleanField( 'seeking_talent' )
+    seeking_talent = BooleanField('seeking_talent')
 
     seeking_description = StringField(
         'seeking_description'
     )
-
-
 
 
 class ArtistForm(FlaskForm):
@@ -201,28 +188,9 @@ class ArtistForm(FlaskForm):
         'image_link'
     )
     genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
-        # choices=[
-        #     ('Alternative', 'Alternative'),
-        #     ('Blues', 'Blues'),
-        #     ('Classical', 'Classical'),
-        #     ('Country', 'Country'),
-        #     ('Electronic', 'Electronic'),
-        #     ('Folk', 'Folk'),
-        #     ('Funk', 'Funk'),
-        #     ('Hip-Hop', 'Hip-Hop'),
-        #     ('Heavy Metal', 'Heavy Metal'),
-        #     ('Instrumental', 'Instrumental'),
-        #     ('Jazz', 'Jazz'),
-        #     ('Musical Theatre', 'Musical Theatre'),
-        #     ('Pop', 'Pop'),
-        #     ('Punk', 'Punk'),
-        #     ('R&B', 'R&B'),
-        #     ('Reggae', 'Reggae'),
-        #     ('Rock n Roll', 'Rock n Roll'),
-        #     ('Soul', 'Soul'),
-        #     ('Other', 'Other'),
-        # ]
+        'genres',
+        validators=[DataRequired()],
+        # choices=all_genres(),
      )
     facebook_link = StringField(
         # TODO implement enum restriction
@@ -233,9 +201,8 @@ class ArtistForm(FlaskForm):
         'website_link'
      )
 
-    seeking_venue = BooleanField( 'seeking_venue' )
+    seeking_venue = BooleanField('seeking_venue')
 
     seeking_description = StringField(
             'seeking_description'
      )
-
