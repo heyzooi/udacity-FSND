@@ -341,7 +341,7 @@ def edit_venue_submission(venue_id):
             print(form.errors)
             flash(f'An error occurred.')
             db.session.rollback()
-            return render_template('forms/new_venue.html', form=form)    
+            return render_template('forms/new_venue.html', form=form)
     except Exception:
         # TODO: on unsuccessful db insert, flash an error instead.
         # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
