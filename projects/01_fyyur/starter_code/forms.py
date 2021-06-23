@@ -8,7 +8,96 @@ from wtforms import (
     DateTimeField,
     BooleanField,
 )
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.fields.simple import HiddenField
+from wtforms.validators import DataRequired, AnyOf, URL, ValidationError
+import re
+
+states = [
+    ('AL', 'AL'),
+    ('AK', 'AK'),
+    ('AZ', 'AZ'),
+    ('AR', 'AR'),
+    ('CA', 'CA'),
+    ('CO', 'CO'),
+    ('CT', 'CT'),
+    ('DE', 'DE'),
+    ('DC', 'DC'),
+    ('FL', 'FL'),
+    ('GA', 'GA'),
+    ('HI', 'HI'),
+    ('ID', 'ID'),
+    ('IL', 'IL'),
+    ('IN', 'IN'),
+    ('IA', 'IA'),
+    ('KS', 'KS'),
+    ('KY', 'KY'),
+    ('LA', 'LA'),
+    ('ME', 'ME'),
+    ('MT', 'MT'),
+    ('NE', 'NE'),
+    ('NV', 'NV'),
+    ('NH', 'NH'),
+    ('NJ', 'NJ'),
+    ('NM', 'NM'),
+    ('NY', 'NY'),
+    ('NC', 'NC'),
+    ('ND', 'ND'),
+    ('OH', 'OH'),
+    ('OK', 'OK'),
+    ('OR', 'OR'),
+    ('MD', 'MD'),
+    ('MA', 'MA'),
+    ('MI', 'MI'),
+    ('MN', 'MN'),
+    ('MS', 'MS'),
+    ('MO', 'MO'),
+    ('PA', 'PA'),
+    ('RI', 'RI'),
+    ('SC', 'SC'),
+    ('SD', 'SD'),
+    ('TN', 'TN'),
+    ('TX', 'TX'),
+    ('UT', 'UT'),
+    ('VT', 'VT'),
+    ('VA', 'VA'),
+    ('WA', 'WA'),
+    ('WV', 'WV'),
+    ('WI', 'WI'),
+    ('WY', 'WY'),
+]
+
+genres = [
+    ("Alternative", "Alternative"),
+    ("Blues", "Blues"),
+    ("Classical", "Classical"),
+    ("Country", "Country"),
+    ("Electronic", "Electronic"),
+    ("Folk", "Folk"),
+    ("Funk", "Funk"),
+    ("Hip-Hop", "Hip-Hop"),
+    ("Heavy Metal", "Heavy Metal"),
+    ("Instrumental", "Instrumental"),
+    ("Jazz", "Jazz"),
+    ("Musical Theatre", "Musical Theatre"),
+    ("Pop", "Pop"),
+    ("Punk", "Punk"),
+    ("R&B", "R&B"),
+    ("Reggae", "Reggae"),
+    ("Rock n Roll", "Rock n Roll"),
+    ("Soul", "Soul"),
+    ("Other", "Other"),
+    ("Swing", "Swing"),
+]
+
+
+def validate_phone(self, phone):
+    us_phone_num = '^([0-9]{3})[-][0-9]{3}[-][0-9]{4}$'
+    match = re.search(us_phone_num, phone.data)
+    if not match:
+        raise ValidationError(
+            'Error, phone number must be in format xxx-xxx-xxxx'
+        )
+
 
 class ShowForm(FlaskForm):
     artist_id = StringField(
@@ -25,6 +114,7 @@ class ShowForm(FlaskForm):
 
 
 class VenueForm(FlaskForm):
+    created_at = HiddenField('created_at', default=datetime.now())
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -33,65 +123,17 @@ class VenueForm(FlaskForm):
     )
     state = SelectField(
         'state', validators=[DataRequired()],
-        choices=[
-            ('AL', 'AL'),
-            ('AK', 'AK'),
-            ('AZ', 'AZ'),
-            ('AR', 'AR'),
-            ('CA', 'CA'),
-            ('CO', 'CO'),
-            ('CT', 'CT'),
-            ('DE', 'DE'),
-            ('DC', 'DC'),
-            ('FL', 'FL'),
-            ('GA', 'GA'),
-            ('HI', 'HI'),
-            ('ID', 'ID'),
-            ('IL', 'IL'),
-            ('IN', 'IN'),
-            ('IA', 'IA'),
-            ('KS', 'KS'),
-            ('KY', 'KY'),
-            ('LA', 'LA'),
-            ('ME', 'ME'),
-            ('MT', 'MT'),
-            ('NE', 'NE'),
-            ('NV', 'NV'),
-            ('NH', 'NH'),
-            ('NJ', 'NJ'),
-            ('NM', 'NM'),
-            ('NY', 'NY'),
-            ('NC', 'NC'),
-            ('ND', 'ND'),
-            ('OH', 'OH'),
-            ('OK', 'OK'),
-            ('OR', 'OR'),
-            ('MD', 'MD'),
-            ('MA', 'MA'),
-            ('MI', 'MI'),
-            ('MN', 'MN'),
-            ('MS', 'MS'),
-            ('MO', 'MO'),
-            ('PA', 'PA'),
-            ('RI', 'RI'),
-            ('SC', 'SC'),
-            ('SD', 'SD'),
-            ('TN', 'TN'),
-            ('TX', 'TX'),
-            ('UT', 'UT'),
-            ('VT', 'VT'),
-            ('VA', 'VA'),
-            ('WA', 'WA'),
-            ('WV', 'WV'),
-            ('WI', 'WI'),
-            ('WY', 'WY'),
-        ]
+        choices=states
     )
     address = StringField(
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone',
+        validators=[
+            DataRequired(),
+            validate_phone,
+        ],
     )
     image_link = StringField(
         'image_link'
@@ -100,8 +142,7 @@ class VenueForm(FlaskForm):
         # TODO implement enum restriction
         'genres',
         validators=[DataRequired()],
-        coerce=int,
-        # choices=all_genres(),
+        choices=genres,
     )
     facebook_link = StringField(
         'facebook_link', validators=[URL()]
@@ -118,6 +159,7 @@ class VenueForm(FlaskForm):
 
 
 class ArtistForm(FlaskForm):
+    created_at = HiddenField('created_at', default=datetime.now())
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -126,63 +168,14 @@ class ArtistForm(FlaskForm):
     )
     state = SelectField(
         'state', validators=[DataRequired()],
-        choices=[
-            ('AL', 'AL'),
-            ('AK', 'AK'),
-            ('AZ', 'AZ'),
-            ('AR', 'AR'),
-            ('CA', 'CA'),
-            ('CO', 'CO'),
-            ('CT', 'CT'),
-            ('DE', 'DE'),
-            ('DC', 'DC'),
-            ('FL', 'FL'),
-            ('GA', 'GA'),
-            ('HI', 'HI'),
-            ('ID', 'ID'),
-            ('IL', 'IL'),
-            ('IN', 'IN'),
-            ('IA', 'IA'),
-            ('KS', 'KS'),
-            ('KY', 'KY'),
-            ('LA', 'LA'),
-            ('ME', 'ME'),
-            ('MT', 'MT'),
-            ('NE', 'NE'),
-            ('NV', 'NV'),
-            ('NH', 'NH'),
-            ('NJ', 'NJ'),
-            ('NM', 'NM'),
-            ('NY', 'NY'),
-            ('NC', 'NC'),
-            ('ND', 'ND'),
-            ('OH', 'OH'),
-            ('OK', 'OK'),
-            ('OR', 'OR'),
-            ('MD', 'MD'),
-            ('MA', 'MA'),
-            ('MI', 'MI'),
-            ('MN', 'MN'),
-            ('MS', 'MS'),
-            ('MO', 'MO'),
-            ('PA', 'PA'),
-            ('RI', 'RI'),
-            ('SC', 'SC'),
-            ('SD', 'SD'),
-            ('TN', 'TN'),
-            ('TX', 'TX'),
-            ('UT', 'UT'),
-            ('VT', 'VT'),
-            ('VA', 'VA'),
-            ('WA', 'WA'),
-            ('WV', 'WV'),
-            ('WI', 'WI'),
-            ('WY', 'WY'),
-        ]
+        choices=states
     )
     phone = StringField(
-        # TODO implement validation logic for state
-        'phone'
+        'phone',
+        validators=[
+            DataRequired(),
+            validate_phone,
+        ],
     )
     image_link = StringField(
         'image_link'
@@ -190,7 +183,7 @@ class ArtistForm(FlaskForm):
     genres = SelectMultipleField(
         'genres',
         validators=[DataRequired()],
-        # choices=all_genres(),
+        choices=genres,
      )
     facebook_link = StringField(
         # TODO implement enum restriction
